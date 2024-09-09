@@ -1,0 +1,28 @@
+# 拉取模型 （使用docker运行Ollama）
+
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+docker exec -it ollama ollama run gemma:2b
+
+# 编写 docker-compose 脚本
+mkdir ai
+cd ai
+cat docker-compose.yaml
+version: '3'
+services:
+  open-webui:
+    image: m.daocloud.io/ghcr.io/open-webui/open-webui:main
+    ports:
+      - "3000:8080"
+    environment:
+      # 这里指向自己的ollama API所在的服务
+      - OLLAMA_BASE_URL=http://192.168.100.100:11434
+    volumes:
+      - open-webui:/app/backend/data
+    restart: always
+
+volumes:
+  open-webui:
+
+docker-compose up -d
+
+# 访问 ip/3000
